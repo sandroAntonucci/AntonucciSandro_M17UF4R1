@@ -203,6 +203,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3733759165379326899}
   - component: {fileID: 8122770794901907408}
+  - component: {fileID: 6371648649633811156}
   m_Layer: 0
   m_Name: Rogue_LegRight
   m_TagString: Untagged
@@ -319,6 +320,28 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.16854571, y: 0.17489839, z: 0.031880833}
     m_Extent: {x: 0.11955361, y: 0.35960317, z: 0.27262303}
   m_DirtyAABB: 0
+--- !u!64 &6371648649633811156
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1137403428890082339}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1 &1346471282362816115
 GameObject:
   m_ObjectHideFlags: 0
@@ -570,6 +593,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3933103616472354324}
   - component: {fileID: 5118841506470928521}
+  - component: {fileID: 8087448163238951758}
   m_Layer: 0
   m_Name: Rogue_Body
   m_TagString: Untagged
@@ -686,6 +710,28 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.051709205, y: 0.8122653, z: 0.022720397}
     m_Extent: {x: 0.4365467, y: 0.4358536, z: 0.34961712}
   m_DirtyAABB: 0
+--- !u!64 &8087448163238951758
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1795073785044852460}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1 &1918725194498851139
 GameObject:
   m_ObjectHideFlags: 0
@@ -944,6 +990,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8713264947703642358}
   - component: {fileID: 7270172575230336682}
+  - component: {fileID: 5099068815791833039}
   m_Layer: 0
   m_Name: Rogue_LegLeft
   m_TagString: Untagged
@@ -1060,6 +1107,28 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.16854566, y: 0.17489827, z: 0.031880923}
     m_Extent: {x: 0.11955359, y: 0.3596033, z: 0.27262312}
   m_DirtyAABB: 0
+--- !u!64 &5099068815791833039
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2300294015851983837}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1 &2370936925326233109
 GameObject:
   m_ObjectHideFlags: 0
@@ -1195,6 +1264,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5885093398331863595}
   - component: {fileID: 5160474238700690423}
+  - component: {fileID: 4750914485770838497}
   m_Layer: 0
   m_Name: Rogue_ArmLeft
   m_TagString: Untagged
@@ -1311,6 +1381,28 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.52532864, y: 1.1047678, z: 0.009169526}
     m_Extent: {x: 0.44592485, y: 0.14156228, z: 0.16403449}
   m_DirtyAABB: 0
+--- !u!64 &4750914485770838497
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2616819860233355209}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1 &2969179167233367204
 GameObject:
   m_ObjectHideFlags: 0
@@ -1321,6 +1413,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2942662158092091359}
   - component: {fileID: 6885230190756932936}
+  - component: {fileID: 4867875997975240582}
   m_Layer: 0
   m_Name: Rogue_Head_Hooded
   m_TagString: Untagged
@@ -1437,6 +1530,28 @@ SkinnedMeshRenderer:
     m_Center: {x: 0, y: 1.7253177, z: 0.010844111}
     m_Extent: {x: 0.5489701, y: 0.525923, z: 0.57829607}
   m_DirtyAABB: 0
+--- !u!64 &4867875997975240582
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2969179167233367204}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1 &3028724874373705012
 GameObject:
   m_ObjectHideFlags: 0
@@ -1529,8 +1644,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6902673187047349893}
-  - component: {fileID: 2295887216813073796}
-  - component: {fileID: 8361027083524905959}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1560,44 +1673,6 @@ Transform:
   - {fileID: 3733759165379326899}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!143 &2295887216813073796
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3239256826306838235}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Height: 2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8361027083524905959
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3239256826306838235}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5956ddaae7303994791b95543d1611c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &3311726122430552171
 GameObject:
   m_ObjectHideFlags: 0
@@ -1962,6 +2037,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8726888802837729110}
   - component: {fileID: 8534572291771878412}
+  - component: {fileID: 2830298172637205128}
   m_Layer: 0
   m_Name: Rogue_ArmRight
   m_TagString: Untagged
@@ -2078,6 +2154,28 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.5253286, y: 1.104768, z: 0.009169109}
     m_Extent: {x: 0.4459247, y: 0.1415618, z: 0.1640344}
   m_DirtyAABB: 0
+--- !u!64 &2830298172637205128
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4591658864357975262}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1 &4728205639553659395
 GameObject:
   m_ObjectHideFlags: 0
