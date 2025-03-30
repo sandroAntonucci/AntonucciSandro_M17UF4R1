@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Sequence : Node
 {
-
     public Sequence(string name, int priority = 0) : base(name, priority) { }
 
     public override Status Process()
@@ -16,7 +15,7 @@ public class Sequence : Node
                 case Status.Running:
                     return Status.Running;
                 case Status.Failure:
-                    Reset();
+                    currentChild = 0;
                     return Status.Failure;
                 default:
                     currentChild++;
@@ -27,5 +26,4 @@ public class Sequence : Node
         Reset();
         return Status.Success;
     }
-
 }

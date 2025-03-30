@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-
 public class PatrolStrategy : IStrategy
 {
 
@@ -23,13 +21,20 @@ public class PatrolStrategy : IStrategy
 
     public Node.Status Process()
     {
-        if (currentIndex == patrolPoints.Count) return Node.Status.Success;
+        if (currentIndex == patrolPoints.Count) currentIndex = 0;
 
         if (agent.remainingDistance < 0.1f)
         {
             var target = patrolPoints[currentIndex];
+
             agent.SetDestination(target.position);
-            entity.LookAt(target);
+
+            Vector3 targetPosition = new Vector3(target.position.x, entity.position.y, target.position.z);
+            entity.LookAt(targetPosition);
+
+            // Optionally, lock the rotation on the Y-axis if needed
+            Quaternion currentRotation = entity.rotation;
+            entity.rotation = Quaternion.Euler(0f, currentRotation.eulerAngles.y, 0f);
 
             currentIndex++;
         }
@@ -37,6 +42,5 @@ public class PatrolStrategy : IStrategy
         return Node.Status.Running;
     }
 
-    public void Reset() => currentIndex = 0;
 
 }
