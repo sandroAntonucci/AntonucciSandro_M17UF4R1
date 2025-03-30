@@ -7,8 +7,8 @@ public class FleeStrategy : IStrategy
 {
     readonly Transform entity;
     readonly NavMeshAgent agent;
-    readonly float fleeDistance = 6; // Distance to maintain
-    readonly float safeDistance = 6f; // Distance where AI stops fleeing
+    readonly float fleeDistance = 6;
+    readonly float safeDistance = 6f; 
 
     public FleeStrategy(Transform entity, NavMeshAgent agent)
     {
@@ -28,11 +28,9 @@ public class FleeStrategy : IStrategy
             return Node.Status.Success;
         }
 
-        // Calculate flee direction
         Vector3 direction = (entity.position - player.position).normalized;
         Vector3 fleeTarget = entity.position + direction * fleeDistance;
 
-        // Validate position on NavMesh
         NavMeshHit hit;
         if (NavMesh.SamplePosition(fleeTarget, out hit, fleeDistance, NavMesh.AllAreas))
         {

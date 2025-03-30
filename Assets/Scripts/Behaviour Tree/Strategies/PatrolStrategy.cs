@@ -32,7 +32,6 @@ public class PatrolStrategy : IStrategy
             Vector3 targetPosition = new Vector3(target.position.x, entity.position.y, target.position.z);
             entity.LookAt(targetPosition);
 
-            // Optionally, lock the rotation on the Y-axis if needed
             Quaternion currentRotation = entity.rotation;
             entity.rotation = Quaternion.Euler(0f, currentRotation.eulerAngles.y, 0f);
 
