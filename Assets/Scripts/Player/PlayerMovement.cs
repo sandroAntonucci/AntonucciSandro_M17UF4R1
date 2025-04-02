@@ -1,21 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using TMPro;
 
-public class PlayerMovement : MonoBehaviour, IDamageable
+public class PlayerMovement : MonoBehaviour
 {
-
     [Header("Movement")]
     public float moveSpeed;
 
-    public Transform orientation;
-
     public float groundDrag;
+
+    public float jumpForce;
+    public float jumpCooldown;
+    public float airMultiplier;
+    bool readyToJump;
+
+    [HideInInspector] public float walkSpeed;
+    [HideInInspector] public float sprintSpeed;
+
+    [Header("Keybinds")]
+    public KeyCode jumpKey = KeyCode.Space;
 
     [Header("Ground Check")]
     public float playerHeight;
-    bool grounded;
+    public LayerMask whatIsGround;
+    public bool grounded;
+
+    public Transform orientation;
 
     float horizontalInput;
     float verticalInput;
@@ -24,31 +35,27 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
     Rigidbody rb;
 
-    // Health
-    [SerializeField] private int maxHealth = 100;
-    private int currentHealth;
-
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-        currentHealth = maxHealth;
+
+        readyToJump = true;
     }
 
     private void Update()
     {
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.2f);
+        // ground check
+        grounded = Physics.SphereCast(transform.position - new Vector3(0, -(playerHeight / 2), 0), 0.3f, Vector3.down, out RaycastHit hit, playerHeight * 0.5f + 0.1f, whatIsGround);
+         
         MyInput();
         SpeedControl();
 
+        // handle drag
         if (grounded)
-        {
             rb.drag = groundDrag;
-        }
         else
-        {
             rb.drag = 0;
-        }
     }
 
     private void FixedUpdate()
@@ -58,44 +65,55 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
     private void MyInput()
     {
-        horizontalInput = Input.GetAxis("Horizontal");
-        verticalInput = Input.GetAxis("Vertical");
+        horizontalInput = Input.GetAxisRaw("Horizontal");
+        verticalInput = Input.GetAxisRaw("Vertical");
 
-        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+        // when to jump
+        if (Input.GetKey(jumpKey) && readyToJump && grounded)
+        {
+            readyToJump = false;
+
+            Jump();
+
+            Invoke(nameof(ResetJump), jumpCooldown);
+        }
     }
 
     private void MovePlayer()
     {
+        // calculate movement direction
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
-        rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+        // on ground
+        if (grounded)
+            rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Acceleration);
+
+        // in air
+        else if (!grounded)
+            rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Acceleration);
     }
 
     private void SpeedControl()
     {
         Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
+        // limit velocity if needed
         if (flatVel.magnitude > moveSpeed)
         {
-            rb.velocity = new Vector3(flatVel.normalized.x * moveSpeed, rb.velocity.y, flatVel.normalized.z * moveSpeed);
+            Vector3 limitedVel = flatVel.normalized * moveSpeed;
+            rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
         }
     }
 
-    public void TakeDamage(int damage)
+    private void Jump()
     {
-        currentHealth -= damage;
+        // reset y velocity
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
-        Debug.Log("Player took damage. Current health: " + currentHealth);
-
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
+        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
     }
-    public void Die()
+    private void ResetJump()
     {
-        Destroy(gameObject);
+        readyToJump = true;
     }
-
 }
-

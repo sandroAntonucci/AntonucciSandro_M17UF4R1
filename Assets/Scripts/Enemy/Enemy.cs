@@ -44,7 +44,7 @@ public class Enemy : MonoBehaviour, IDamageable
         if (canAttack)
         {
             if (player == null) return;
-            player.GetComponent<PlayerMovement>().TakeDamage(20);
+            //player.GetComponent<PlayerMovement>().TakeDamage(20);
             Debug.Log("Enemy attacked player");
             StartCoroutine(AttackCooldown());
         }
