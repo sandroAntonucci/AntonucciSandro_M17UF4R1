@@ -1,25 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
-    public float moveSpeed;
-
+    public float walkSpeed;
+    public float runSpeed;
     public float groundDrag;
-
     public float jumpForce;
     public float jumpCooldown;
     public float airMultiplier;
-    bool readyToJump;
-
-    [HideInInspector] public float walkSpeed;
-    [HideInInspector] public float sprintSpeed;
-
-    [Header("Keybinds")]
-    public KeyCode jumpKey = KeyCode.Space;
+    bool readyToJump = true;
 
     [Header("Ground Check")]
     public float playerHeight;
@@ -28,34 +21,119 @@ public class PlayerMovement : MonoBehaviour
 
     public Transform orientation;
 
-    float horizontalInput;
-    float verticalInput;
-
+    Vector2 moveInput;
     Vector3 moveDirection;
+    bool isRunning;
+
+    bool isJumping;
 
     Rigidbody rb;
+    PlayerInput playerInputActions;
+    InputAction moveAction;
+    InputAction jumpAction;
+    InputAction runAction;
+
+    private Animator anim;
+
+    private void Awake()
+    {
+        playerInputActions = GetComponent<PlayerInput>();
+        anim = GetComponent<Animator>();
+
+        moveAction = playerInputActions.actions["Move"];
+        jumpAction = playerInputActions.actions["Jump"];
+        runAction = playerInputActions.actions["Run"];
+    }
+
+    private void OnEnable()
+    {
+        moveAction.Enable();
+        jumpAction.Enable();
+        runAction.Enable();
+
+        jumpAction.performed += Jump;
+
+        moveAction.performed += ctx =>
+        {
+            moveInput = ctx.ReadValue<Vector2>();
+            anim.SetBool("isWalking", true);
+        };
+
+        moveAction.canceled += ctx =>
+        {
+            moveInput = Vector2.zero;
+            anim.SetBool("isWalking", false);
+        };
+
+        runAction.performed += ctx =>
+        {
+            isRunning = true;
+            anim.SetBool("isRunning", true);
+        };
+
+        runAction.canceled += ctx =>
+        {
+            isRunning = false;
+            anim.SetBool("isRunning", false);
+        };
+    }
+
+    private void OnDisable()
+    {
+        moveAction.Disable();
+        jumpAction.Disable();
+        runAction.Disable();
+
+        jumpAction.performed -= Jump;
+        moveAction.performed -= ctx =>
+        {
+            moveInput = ctx.ReadValue<Vector2>();
+            anim.SetBool("isWalking", true);
+        };
+        moveAction.canceled -= ctx =>
+        {
+            moveInput = Vector2.zero;
+            anim.SetBool("isWalking", false);
+        };
+        runAction.performed -= ctx =>
+        {
+            isRunning = true;
+            anim.SetBool("isRunning", true);
+        };
+        runAction.canceled -= ctx =>
+        {
+            isRunning = false;
+            anim.SetBool("isRunning", false);
+        };
+    }
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-
-        readyToJump = true;
     }
 
     private void Update()
     {
-        // ground check
         grounded = Physics.SphereCast(transform.position - new Vector3(0, -(playerHeight / 2), 0), 0.3f, Vector3.down, out RaycastHit hit, playerHeight * 0.5f + 0.1f, whatIsGround);
-         
-        MyInput();
+        
+        anim.SetBool("isGrounded", grounded);
+
+        if(grounded && !isJumping)
+        {
+            anim.SetBool("isJumping", false);
+            anim.SetBool("isFalling", false);
+            isJumping = false;
+        }
+
+        if((isJumping && rb.velocity.y < 0) || rb.velocity.y < -2f)
+        {
+            anim.SetBool("isFalling", true);
+        }
+
         SpeedControl();
 
-        // handle drag
-        if (grounded)
-            rb.drag = groundDrag;
-        else
-            rb.drag = 0;
+        rb.drag = grounded ? groundDrag : 0;
     }
 
     private void FixedUpdate()
@@ -63,55 +141,42 @@ public class PlayerMovement : MonoBehaviour
         MovePlayer();
     }
 
-    private void MyInput()
-    {
-        horizontalInput = Input.GetAxisRaw("Horizontal");
-        verticalInput = Input.GetAxisRaw("Vertical");
-
-        // when to jump
-        if (Input.GetKey(jumpKey) && readyToJump && grounded)
-        {
-            readyToJump = false;
-
-            Jump();
-
-            Invoke(nameof(ResetJump), jumpCooldown);
-        }
-    }
-
     private void MovePlayer()
     {
-        // calculate movement direction
-        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+        moveDirection = orientation.forward * moveInput.y + orientation.right * moveInput.x;
+        float currentSpeed = isRunning ? runSpeed : walkSpeed;
 
-        // on ground
         if (grounded)
-            rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Acceleration);
-
-        // in air
-        else if (!grounded)
-            rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Acceleration);
+            rb.AddForce(moveDirection.normalized * currentSpeed * 10f, ForceMode.Acceleration);
+        else
+            rb.AddForce(moveDirection.normalized * currentSpeed * 10f * airMultiplier, ForceMode.Acceleration);
     }
 
     private void SpeedControl()
     {
         Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        float maxSpeed = isRunning ? runSpeed : walkSpeed;
 
-        // limit velocity if needed
-        if (flatVel.magnitude > moveSpeed)
+        if (flatVel.magnitude > maxSpeed)
         {
-            Vector3 limitedVel = flatVel.normalized * moveSpeed;
+            Vector3 limitedVel = flatVel.normalized * maxSpeed;
             rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
         }
     }
 
-    private void Jump()
+    private void Jump(InputAction.CallbackContext context)
     {
-        // reset y velocity
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        if (readyToJump && grounded)
+        {
+            readyToJump = false;
+            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+            anim.SetBool("isJumping", true);
+            isJumping = true;
+            Invoke(nameof(ResetJump), jumpCooldown);
+        }
     }
+
     private void ResetJump()
     {
         readyToJump = true;

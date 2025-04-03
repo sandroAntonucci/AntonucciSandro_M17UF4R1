@@ -8,7 +8,6 @@ public class Leaf : Node
 
     public Leaf(string name, IStrategy strategy, int priority = 0) : base(name, priority)
     {
-        // Preconditions.CheckNotNull(strategy);
         this.strategy = strategy;
     }
 
