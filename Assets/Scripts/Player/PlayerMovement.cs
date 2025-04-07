@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")]
     public float walkSpeed;
     public float runSpeed;
+    public float crouchSpeed;
     public float groundDrag;
     public float jumpForce;
     public float jumpCooldown;
@@ -23,15 +24,21 @@ public class PlayerMovement : MonoBehaviour
 
     Vector2 moveInput;
     Vector3 moveDirection;
-    bool isRunning;
 
-    bool isJumping;
+    private bool isRunning;
+    private bool isJumping;
+    private bool isCrouching;
 
     Rigidbody rb;
     PlayerInput playerInputActions;
+
     InputAction moveAction;
     InputAction jumpAction;
     InputAction runAction;
+    InputAction crouchAction;
+
+
+    public float currentJumpTimer;
 
     private Animator anim;
 
@@ -43,6 +50,7 @@ public class PlayerMovement : MonoBehaviour
         moveAction = playerInputActions.actions["Move"];
         jumpAction = playerInputActions.actions["Jump"];
         runAction = playerInputActions.actions["Run"];
+        crouchAction = playerInputActions.actions["Crouch"];
     }
 
     private void OnEnable()
@@ -50,6 +58,7 @@ public class PlayerMovement : MonoBehaviour
         moveAction.Enable();
         jumpAction.Enable();
         runAction.Enable();
+        crouchAction.Enable();
 
         jumpAction.performed += Jump;
 
@@ -76,6 +85,18 @@ public class PlayerMovement : MonoBehaviour
             isRunning = false;
             anim.SetBool("isRunning", false);
         };
+
+        crouchAction.performed += ctx =>
+        {
+            isCrouching = true;
+            anim.SetBool("isCrouching", true);
+        };
+        crouchAction.canceled += ctx =>
+        {
+            isCrouching = false;
+            anim.SetBool("isCrouching", false);
+        };
+
     }
 
     private void OnDisable()
@@ -119,16 +140,20 @@ public class PlayerMovement : MonoBehaviour
         
         anim.SetBool("isGrounded", grounded);
 
-        if(grounded && !isJumping)
+        if(grounded && isJumping && currentJumpTimer > 0.1f)
         {
+            currentJumpTimer = 0;
             anim.SetBool("isJumping", false);
-            anim.SetBool("isFalling", false);
             isJumping = false;
-        }
+        }   
 
-        if((isJumping && rb.velocity.y < 0) || rb.velocity.y < -2f)
+        if((isJumping && rb.velocity.y < 0 && currentJumpTimer > 0) || rb.velocity.y < -2f)
         {
             anim.SetBool("isFalling", true);
+        }
+        else
+        {
+            anim.SetBool("isFalling", false);
         }
 
         SpeedControl();
@@ -144,7 +169,14 @@ public class PlayerMovement : MonoBehaviour
     private void MovePlayer()
     {
         moveDirection = orientation.forward * moveInput.y + orientation.right * moveInput.x;
+
         float currentSpeed = isRunning ? runSpeed : walkSpeed;
+
+        // Crouching takes priority over running
+        if (isCrouching)
+        {
+            currentSpeed = crouchSpeed;
+        }
 
         if (grounded)
             rb.AddForce(moveDirection.normalized * currentSpeed * 10f, ForceMode.Acceleration);
@@ -167,13 +199,23 @@ public class PlayerMovement : MonoBehaviour
     private void Jump(InputAction.CallbackContext context)
     {
         if (readyToJump && grounded)
-        {
+        {  
             readyToJump = false;
             rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
             rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
             anim.SetBool("isJumping", true);
             isJumping = true;
+            StartCoroutine(JumpTimer());
             Invoke(nameof(ResetJump), jumpCooldown);
+        }
+    }
+
+    private IEnumerator JumpTimer()
+    {
+        while (isJumping)
+        {
+            currentJumpTimer += Time.deltaTime;
+            yield return null;
         }
     }
 
