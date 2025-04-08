@@ -8,7 +8,6 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")]
     public float walkSpeed;
     public float runSpeed;
-    public float crouchSpeed;
     public float groundDrag;
     public float jumpForce;
     public float jumpCooldown;
@@ -29,6 +28,10 @@ public class PlayerMovement : MonoBehaviour
     private bool isJumping;
     private bool isCrouching;
 
+    private bool isCheering = false;
+
+    private Coroutine CheeringCoroutine;
+
     Rigidbody rb;
     PlayerInput playerInputActions;
 
@@ -36,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
     InputAction jumpAction;
     InputAction runAction;
     InputAction crouchAction;
+    InputAction cheerAction;
 
 
     public float currentJumpTimer;
@@ -51,6 +55,7 @@ public class PlayerMovement : MonoBehaviour
         jumpAction = playerInputActions.actions["Jump"];
         runAction = playerInputActions.actions["Run"];
         crouchAction = playerInputActions.actions["Crouch"];
+        cheerAction = playerInputActions.actions["Cheer"];
     }
 
     private void OnEnable()
@@ -59,6 +64,7 @@ public class PlayerMovement : MonoBehaviour
         jumpAction.Enable();
         runAction.Enable();
         crouchAction.Enable();
+        cheerAction.Enable();
 
         jumpAction.performed += Jump;
 
@@ -97,6 +103,16 @@ public class PlayerMovement : MonoBehaviour
             anim.SetBool("isCrouching", false);
         };
 
+        cheerAction.performed += ctx =>
+        {
+            if (CheeringCoroutine == null)
+            {
+                CheeringCoroutine = StartCoroutine(Cheer());
+            }
+            anim.SetBool("isCheering", true);
+        };
+
+
     }
 
     private void OnDisable()
@@ -126,6 +142,25 @@ public class PlayerMovement : MonoBehaviour
             isRunning = false;
             anim.SetBool("isRunning", false);
         };
+        crouchAction.performed -= ctx =>
+        {
+            isCrouching = true;
+            anim.SetBool("isCrouching", true);
+        };
+        crouchAction.canceled -= ctx =>
+        {
+            isCrouching = false;
+            anim.SetBool("isCrouching", false);
+        };
+        cheerAction.performed -= ctx =>
+        {
+            if (CheeringCoroutine != null)
+            {
+                StopCoroutine(CheeringCoroutine);
+                CheeringCoroutine = null;
+            }
+            anim.SetBool("isCheering", false);
+        };
     }
 
     private void Start()
@@ -136,11 +171,18 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        grounded = Physics.SphereCast(transform.position - new Vector3(0, -(playerHeight / 2), 0), 0.3f, Vector3.down, out RaycastHit hit, playerHeight * 0.5f + 0.1f, whatIsGround);
-        
+        grounded = Physics.SphereCast(transform.position - new Vector3(0, -(playerHeight / 2), 0), 0.05f, Vector3.down, out RaycastHit hit, playerHeight * 0.5f + 0.1f, whatIsGround);
+
         anim.SetBool("isGrounded", grounded);
 
-        if(grounded && isJumping && currentJumpTimer > 0.1f)
+
+        if (isCheering)
+        {
+            return;
+        }
+
+        
+        if (grounded && isJumping && currentJumpTimer > 0.1f)
         {
             currentJumpTimer = 0;
             anim.SetBool("isJumping", false);
@@ -163,11 +205,16 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isCheering)
+        {
+            return;
+        }
         MovePlayer();
     }
 
     private void MovePlayer()
     {
+
         moveDirection = orientation.forward * moveInput.y + orientation.right * moveInput.x;
 
         float currentSpeed = isRunning ? runSpeed : walkSpeed;
@@ -175,7 +222,7 @@ public class PlayerMovement : MonoBehaviour
         // Crouching takes priority over running
         if (isCrouching)
         {
-            currentSpeed = crouchSpeed;
+            currentSpeed /= 2;
         }
 
         if (grounded)
@@ -223,4 +270,14 @@ public class PlayerMovement : MonoBehaviour
     {
         readyToJump = true;
     }
+
+    private IEnumerator Cheer()
+    {
+        isCheering = true;
+        yield return new WaitForSeconds(1.8f);
+        anim.SetBool("isCheering", false);
+        isCheering = false;
+        CheeringCoroutine = null;
+    }
+
 }
