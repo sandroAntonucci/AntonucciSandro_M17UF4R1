@@ -10,10 +10,18 @@ public class PlayerAttack : MonoBehaviour
 
     public bool hasCrossBow = false;
 
+    public float mouseSensitivity = 100f;
+    float xRotation = 0f;
+
+    public Transform playerBody;
+    public Transform cameraTransform; 
+
     public GameObject knifeOne;
     public GameObject knifeTwo;
 
     public GameObject crossBow;
+
+    public GameObject thirdPersonCamera;
 
     private Animator anim;
 
@@ -36,7 +44,7 @@ public class PlayerAttack : MonoBehaviour
 
         attackAction.performed += ctx =>
         {
-            if (hasKnife || hasCrossBow) anim.SetBool("isAttacking", true);
+            if (hasKnife) anim.SetBool("isAttacking", true);
         };
         attackAction.canceled += ctx =>
         {
@@ -47,10 +55,15 @@ public class PlayerAttack : MonoBehaviour
 
         aimAction.performed += ctx =>
         {
-            if (hasCrossBow) anim.SetBool("isAiming", true);
+            if (hasCrossBow)
+            {
+                thirdPersonCamera.SetActive(false);
+                anim.SetBool("isAiming", true);
+            }
         };
         aimAction.canceled += ctx =>
         {
+            thirdPersonCamera.SetActive(true);
             anim.SetBool("isAiming", false);
         };
 
@@ -62,7 +75,7 @@ public class PlayerAttack : MonoBehaviour
 
         attackAction.performed -= ctx =>
         {
-            if (hasKnife || hasCrossBow) anim.SetBool("isAttacking", true);
+            if (hasKnife) anim.SetBool("isAttacking", true);
         };
         attackAction.canceled -= ctx =>
         {
@@ -73,11 +86,16 @@ public class PlayerAttack : MonoBehaviour
 
         aimAction.performed -= ctx =>
         {
-            if (hasCrossBow) anim.SetBool("isAiming", true);
+            if (hasCrossBow)
+            {
+                thirdPersonCamera.SetActive(false);
+                anim.SetBool("isAiming", true);
+            }
         };
 
         aimAction.canceled -= ctx =>
         {
+            thirdPersonCamera.SetActive(true);
             anim.SetBool("isAiming", false);
         };
     }
@@ -99,4 +117,36 @@ public class PlayerAttack : MonoBehaviour
         crossBow.SetActive(true);
     }
 
+    private void Update()
+    {
+        if (hasCrossBow && anim.GetBool("isAiming"))
+        {
+            //AimAlignToCamera();
+            UpdateCameraLook();
+        }
+    }
+
+    private void AimAlignToCamera()
+    {
+        Vector3 camForward = cameraTransform.forward;
+        camForward.y = 0; // Keep the rotation horizontal only
+        if (camForward != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(camForward);
+            playerBody.rotation = Quaternion.Slerp(playerBody.rotation, targetRotation, Time.deltaTime * 10f); // Smooth rotation
+        }
+    }
+
+
+    private void UpdateCameraLook()
+    {
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -80f, 80f); // Clamp pitch
+
+        cameraTransform.localRotation = Quaternion.Euler(0f, 39f, 0f);
+        playerBody.Rotate(Vector3.up * mouseX);
+    }
 }
