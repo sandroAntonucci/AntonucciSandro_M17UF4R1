@@ -12,9 +12,10 @@ public class PlayerAttack : MonoBehaviour
 
     public float mouseSensitivity = 100f;
     float xRotation = 0f;
+    float yRotation = 0f;
 
     public Transform playerBody;
-    public Transform cameraTransform; 
+    public Transform bowTransform; 
 
     public GameObject knifeOne;
     public GameObject knifeTwo;
@@ -57,8 +58,8 @@ public class PlayerAttack : MonoBehaviour
         {
             if (hasCrossBow)
             {
-                thirdPersonCamera.SetActive(false);
                 anim.SetBool("isAiming", true);
+                StartCoroutine(TransitionCamera());
             }
         };
         aimAction.canceled += ctx =>
@@ -88,8 +89,8 @@ public class PlayerAttack : MonoBehaviour
         {
             if (hasCrossBow)
             {
-                thirdPersonCamera.SetActive(false);
                 anim.SetBool("isAiming", true);
+                StartCoroutine(TransitionCamera());
             }
         };
 
@@ -126,15 +127,16 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
-    private void AimAlignToCamera()
+    public IEnumerator TransitionCamera()
     {
-        Vector3 camForward = cameraTransform.forward;
-        camForward.y = 0; // Keep the rotation horizontal only
-        if (camForward != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(camForward);
-            playerBody.rotation = Quaternion.Slerp(playerBody.rotation, targetRotation, Time.deltaTime * 10f); // Smooth rotation
-        }
+        yield return new WaitForSeconds(0.5f);
+        thirdPersonCamera.SetActive(false);
+
+        Vector3 globalTransform = crossBow.transform.position;
+
+        crossBow.transform.SetParent(gameObject.transform);
+
+        crossBow.transform.position = globalTransform;
     }
 
 
@@ -146,7 +148,9 @@ public class PlayerAttack : MonoBehaviour
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -80f, 80f); // Clamp pitch
 
-        cameraTransform.localRotation = Quaternion.Euler(0f, 39f, 0f);
-        playerBody.Rotate(Vector3.up * mouseX);
+        yRotation += mouseX; // Add this line if not using playerBody for yaw
+
+        // Apply both pitch and yaw
+        bowTransform.rotation = Quaternion.Euler(xRotation, yRotation, 0f);
     }
 }
