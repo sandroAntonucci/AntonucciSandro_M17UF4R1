@@ -401,14 +401,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1367871056959538062}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.66212386, y: -0.24817725, z: 0.28362092, w: 0.647734}
-  m_LocalPosition: {x: 0.33999634, y: 0.6269998, z: -0.3439997}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6021595794320097236}
-  m_Father: {fileID: 9009260299959871097}
-  m_LocalEulerAnglesHint: {x: -134.194, y: 90, z: -86.9}
+  m_Father: {fileID: 9054367029517891348}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3639359670034231163
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -583,7 +583,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9100330200763150148}
-  - {fileID: 800718125255238394}
   m_Father: {fileID: 3416307966097585669}
   m_LocalEulerAnglesHint: {x: -0.0000002782815, y: -15.000001, z: -0.0000010521835}
 --- !u!1 &1795073785044852460
@@ -1622,6 +1621,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
+  - {fileID: 9054367029517891348}
   - {fileID: 5731197882328696622}
   - {fileID: 5885093398331863595}
   - {fileID: 8726888802837729110}
@@ -1751,10 +1751,10 @@ MonoBehaviour:
   hasCrossBow: 0
   mouseSensitivity: 100
   playerBody: {fileID: 5731197882328696622}
-  cameraTransform: {fileID: 6021595794320097236}
+  bowTransform: {fileID: 0}
   knifeOne: {fileID: 3884836439284631136}
   knifeTwo: {fileID: 3028724874373705012}
-  crossBow: {fileID: 1367871056959538062}
+  crossBow: {fileID: 8248715253408989422}
   thirdPersonCamera: {fileID: 0}
 --- !u!136 &6788629394359620762
 CapsuleCollider:
@@ -2811,6 +2811,38 @@ Transform:
   - {fileID: 7284072166337237508}
   m_Father: {fileID: 3416307966097585669}
   m_LocalEulerAnglesHint: {x: -4.0322213, y: -143.78716, z: 168.42543}
+--- !u!1 &8248715253408989422
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9054367029517891348}
+  m_Layer: 7
+  m_Name: CrossBowHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9054367029517891348
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8248715253408989422}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.000000013879349, y: 0.7724751, z: -0.000000016882991, w: 0.6350451}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 800718125255238394}
+  m_Father: {fileID: 6902673187047349893}
+  m_LocalEulerAnglesHint: {x: 0, y: 101.153, z: 0}
 --- !u!1 &8621030892059858808
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,17 +15,21 @@ public class PlayerAttack : MonoBehaviour
     float xRotation = 0f;
     float yRotation = 0f;
 
+    public Transform orientation;
+
     public Transform playerBody;
-    public Transform bowTransform; 
 
     public GameObject knifeOne;
     public GameObject knifeTwo;
 
     public GameObject crossBow;
+    public GameObject visibleCrossBow;
 
     public GameObject thirdPersonCamera;
 
     private Animator anim;
+
+    public CrossbowAttack crossbowAttack;
 
     PlayerInput playerInputActions;
 
@@ -65,6 +70,8 @@ public class PlayerAttack : MonoBehaviour
         aimAction.canceled += ctx =>
         {
             thirdPersonCamera.SetActive(true);
+            UpdateCullingMaskNotAiming();
+            crossbowAttack.canAttack = false;
             anim.SetBool("isAiming", false);
         };
 
@@ -97,6 +104,8 @@ public class PlayerAttack : MonoBehaviour
         aimAction.canceled -= ctx =>
         {
             thirdPersonCamera.SetActive(true);
+            UpdateCullingMaskNotAiming();
+            crossbowAttack.canAttack = false;
             anim.SetBool("isAiming", false);
         };
     }
@@ -115,42 +124,79 @@ public class PlayerAttack : MonoBehaviour
 
     public void ShowCrossBow()
     {
-        crossBow.SetActive(true);
+        visibleCrossBow.SetActive(true);
     }
 
     private void Update()
     {
         if (hasCrossBow && anim.GetBool("isAiming"))
         {
-            //AimAlignToCamera();
             UpdateCameraLook();
         }
     }
 
     public IEnumerator TransitionCamera()
     {
-        yield return new WaitForSeconds(0.5f);
         thirdPersonCamera.SetActive(false);
 
-        Vector3 globalTransform = crossBow.transform.position;
+        yield return new WaitForSeconds(0.3f);
 
-        crossBow.transform.SetParent(gameObject.transform);
+        UpdateCullingMaskAiming();
 
-        crossBow.transform.position = globalTransform;
+        crossbowAttack.canAttack = true;
+    }
+
+    private void UpdateCullingMaskAiming()
+    {
+        Camera cam = Camera.main;
+        int playerLayer = LayerMask.NameToLayer("Player");
+        int crossbowLayer = LayerMask.NameToLayer("CrossBow");
+
+        // Si existen las capas "Player" y "Crossbow"
+        if (playerLayer != -1 && crossbowLayer != -1)
+        {
+            // Quitamos la capa "Player" del culling mask de la cámara
+            cam.cullingMask = cam.cullingMask & ~(1 << playerLayer);
+
+            // Añadimos la capa "Crossbow" al culling mask de la cámara
+            cam.cullingMask |= 1 << crossbowLayer;
+        }
+    }
+
+    private void UpdateCullingMaskNotAiming()
+    {
+
+        Camera cam = Camera.main;
+        int playerLayer = LayerMask.NameToLayer("Player");
+        int crossbowLayer = LayerMask.NameToLayer("CrossBow");
+
+        // Si existen las capas "Player" y "Crossbow"
+        if (playerLayer != -1 && crossbowLayer != -1)
+        {
+            // Quitamos la capa "Player" del culling mask de la cámara
+            cam.cullingMask = cam.cullingMask & ~(1 << crossbowLayer);
+
+            // Añadimos la capa "Crossbow" al culling mask de la cámara
+            cam.cullingMask |= 1 << playerLayer;
+        }
+
+
+
     }
 
 
-    private void UpdateCameraLook()
+
+    void UpdateCameraLook()
     {
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -80f, 80f); // Clamp pitch
+        playerBody.Rotate(Vector3.up * mouseX);
+        orientation.Rotate(Vector3.up * mouseX);
 
-        yRotation += mouseX; // Add this line if not using playerBody for yaw
+        yRotation -= mouseY;
+        yRotation = Mathf.Clamp(yRotation, -90f, 90f);
 
-        // Apply both pitch and yaw
-        bowTransform.rotation = Quaternion.Euler(xRotation, yRotation, 0f);
+        crossBow.transform.localRotation = Quaternion.Euler(0, orientation.eulerAngles.y + 90 , yRotation);
     }
 }
