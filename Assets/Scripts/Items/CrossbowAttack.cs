@@ -10,6 +10,8 @@ public class CrossbowAttack : MonoBehaviour
 
     public Transform shootPosition;
 
+    public GameObject arrowPosition;
+
     public bool canAttack;
 
     private float attackCooldown = 1f;
@@ -47,28 +49,31 @@ public class CrossbowAttack : MonoBehaviour
     {
 
         attackCooldown = 0f;
-
+        arrowPosition.GetComponent<MeshRenderer>().enabled = false;
         while (attackCooldown < 1f)
         {
             attackCooldown += Time.deltaTime;
             yield return null;
         }
-
+        arrowPosition.GetComponent<MeshRenderer>().enabled = true;
         attackCooldown = 1f;
     }
 
     private void Attack()
     {
-        GameObject arrow = Instantiate(ArrowPrefab, shootPosition.position, Quaternion.identity);
+        // Spawns the arrow with the current global rotation of this GameObject
+        GameObject arrow = Instantiate(ArrowPrefab, shootPosition.position, arrowPosition.transform.rotation);
 
-        arrow.transform.rotation = Quaternion.Euler(90, 90, 90);
-
-        arrow.transform.forward = transform.forward;
+        arrow.layer = LayerMask.NameToLayer("Default");
 
         arrow.AddComponent<Rigidbody>();
 
         Rigidbody rb = arrow.GetComponent<Rigidbody>();
-        rb.AddForce(transform.right * -20f, ForceMode.Impulse);
+
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+
+        rb.AddForce(transform.right * -25f, ForceMode.Impulse);
 
         Destroy(arrow, 5f);
     }

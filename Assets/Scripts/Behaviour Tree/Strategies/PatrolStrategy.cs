@@ -23,6 +23,8 @@ public class PatrolStrategy : IStrategy
     {
         if (currentIndex == patrolPoints.Count) currentIndex = 0;
 
+        entity.gameObject.GetComponent<Animator>().Play("Walking");
+
         if (agent.remainingDistance < 0.1f)
         {
             var target = patrolPoints[currentIndex];

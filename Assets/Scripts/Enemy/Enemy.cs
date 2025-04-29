@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.InputSystem.LowLevel;
 
 public class Enemy : MonoBehaviour, IDamageable
 {
@@ -19,13 +20,21 @@ public class Enemy : MonoBehaviour, IDamageable
     NavMeshAgent agent;
     BehaviourTree tree;
 
+
     public bool playerDetected = false;
     public bool playerInRange = false;
     public bool playerInAttackRange = false;
 
+
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+
+        player.GetComponent<PlayerMovement>().OnPlayerDied += () =>
+        {
+            GetComponent<Animator>().Play("Cheer");
+            enabled = false;
+        };
 
         currentHealth = MaxHealth;
 
@@ -38,14 +47,14 @@ public class Enemy : MonoBehaviour, IDamageable
         tree.Process();
     }
 
-
     private void Attack()
     {
         if (canAttack)
         {
             if (player == null) return;
             //player.GetComponent<PlayerMovement>().TakeDamage(20);
-            Debug.Log("Enemy attacked player");
+
+            gameObject.GetComponent<Animator>().Play("Attacking");
             StartCoroutine(AttackCooldown());
         }
     }
@@ -54,7 +63,7 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         canAttack = false;
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
 
         canAttack = true;
     }
@@ -104,7 +113,10 @@ public class Enemy : MonoBehaviour, IDamageable
         }
 
         attackPlayer.AddChild(new Leaf("IsPlayerInAttackRange", new Condition(IsPlayerInAttackRange)));
-        attackPlayer.AddChild(new Leaf("AttackPlayer", new ActionStrategy(() => Attack())));
+        attackPlayer.AddChild(new Leaf("AttackPlayer", new ActionStrategy(() =>
+        {
+            Attack();
+        })));
 
         AIBehaviour.AddChild(attackPlayer);
 
@@ -125,7 +137,13 @@ public class Enemy : MonoBehaviour, IDamageable
         }
 
         followPlayer.AddChild(new Leaf("IsFollowingPlayer", new Condition(IsFollowingPlayer)));
-        followPlayer.AddChild(new Leaf("MoveToPlayer", new ActionStrategy(() => agent.SetDestination(player.transform.position))));
+        followPlayer.AddChild(new Leaf("MoveToPlayer", new ActionStrategy(() =>
+        {
+            agent.SetDestination(player.transform.position);
+            gameObject.GetComponent<Animator>().Play("Running");
+        }
+     
+        )));
 
         AIBehaviour.AddChild(followPlayer);
 

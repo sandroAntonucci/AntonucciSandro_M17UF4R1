@@ -29,6 +29,8 @@ public class PlayerAttack : MonoBehaviour
 
     private Animator anim;
 
+    private Coroutine transitionCameraCoroutine;
+
     public CrossbowAttack crossbowAttack;
 
     PlayerInput playerInputActions;
@@ -64,11 +66,16 @@ public class PlayerAttack : MonoBehaviour
             if (hasCrossBow)
             {
                 anim.SetBool("isAiming", true);
-                StartCoroutine(TransitionCamera());
+                transitionCameraCoroutine = StartCoroutine(TransitionCamera());
             }
         };
         aimAction.canceled += ctx =>
         {
+            if (transitionCameraCoroutine != null)
+            {
+                StopCoroutine(transitionCameraCoroutine);
+                transitionCameraCoroutine = null;
+            }
             thirdPersonCamera.SetActive(true);
             UpdateCullingMaskNotAiming();
             crossbowAttack.canAttack = false;
@@ -97,12 +104,17 @@ public class PlayerAttack : MonoBehaviour
             if (hasCrossBow)
             {
                 anim.SetBool("isAiming", true);
-                StartCoroutine(TransitionCamera());
+                transitionCameraCoroutine = StartCoroutine(TransitionCamera());
             }
         };
 
         aimAction.canceled -= ctx =>
         {
+            if (transitionCameraCoroutine != null)
+            {
+                StopCoroutine(transitionCameraCoroutine);
+                transitionCameraCoroutine = null;
+            }
             thirdPersonCamera.SetActive(true);
             UpdateCullingMaskNotAiming();
             crossbowAttack.canAttack = false;

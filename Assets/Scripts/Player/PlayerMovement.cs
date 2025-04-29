@@ -2,9 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IDamageable
 {
+    [Header("Health")]
+    public int maxHealth = 100;
+    public int currentHealth;
+
+    public bool isDead = false;
+
+    public event Action OnPlayerDied;
+
     [Header("Movement")]
     public float walkSpeed;
     public float runSpeed;
@@ -50,6 +59,8 @@ public class PlayerMovement : MonoBehaviour
     {
         playerInputActions = GetComponent<PlayerInput>();
         anim = GetComponent<Animator>();
+
+        currentHealth = maxHealth;
 
         moveAction = playerInputActions.actions["Move"];
         jumpAction = playerInputActions.actions["Jump"];
@@ -161,6 +172,39 @@ public class PlayerMovement : MonoBehaviour
             }
             anim.SetBool("isCheering", false);
         };
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Enemy"))
+        {
+            TakeDamage(20);
+        }
+    }
+
+    public void TakeDamage(int damage)
+    {
+        if (isDead) return;
+
+        currentHealth -= damage;
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    public void Die()
+    {
+
+        OnPlayerDied?.Invoke();
+
+        isDead = true;
+
+        anim.Play("Death");
+
+        GetComponent<PlayerAttack>().enabled = false;
+        enabled = false;
     }
 
     private void Start()

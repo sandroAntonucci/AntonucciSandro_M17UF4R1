@@ -31,6 +31,8 @@ public class FleeStrategy : IStrategy
         Vector3 direction = (entity.position - player.position).normalized;
         Vector3 fleeTarget = entity.position + direction * fleeDistance;
 
+        entity.gameObject.GetComponent<Animator>().Play("Running");
+
         NavMeshHit hit;
         if (NavMesh.SamplePosition(fleeTarget, out hit, fleeDistance, NavMesh.AllAreas))
         {

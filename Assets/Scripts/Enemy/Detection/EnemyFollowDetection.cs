@@ -8,6 +8,8 @@ public class EnemyFollowDetection : MonoBehaviour
 
     private GameObject playerObject;
 
+    private Coroutine playerDetectedWaitTime;
+
     public float fieldOfView = 120f;
 
     private void Start()
@@ -15,23 +17,51 @@ public class EnemyFollowDetection : MonoBehaviour
         playerObject = GameObject.FindGameObjectWithTag("Player");
     }
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            enemy.playerInRange = false;
-            enemy.playerDetected = false;
-        }
-    }
-
     private void OnTriggerStay(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             enemy.playerInRange = true;
-            enemy.playerDetected = DetectPlayer();
+
+            if (DetectPlayer())
+            {
+                enemy.playerDetected = true;
+
+                if (playerDetectedWaitTime != null)
+                {
+                    StopCoroutine(playerDetectedWaitTime);
+                    playerDetectedWaitTime = null;
+                }
+            }
+            else if (enemy.playerDetected && playerDetectedWaitTime == null)
+            {
+                playerDetectedWaitTime = StartCoroutine(PlayerDetectedWaitTime());
+            }
         }
     }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            enemy.playerInRange = false;
+
+            if (playerDetectedWaitTime != null)
+            {
+                StopCoroutine(playerDetectedWaitTime);
+                playerDetectedWaitTime = null;
+            }
+            enemy.playerDetected = false;
+        }
+    }
+
+    private IEnumerator PlayerDetectedWaitTime()
+    {
+        yield return new WaitForSeconds(3f);
+        enemy.playerDetected = false;
+        playerDetectedWaitTime = null;
+    }
+
 
     public bool DetectPlayer()
     {
