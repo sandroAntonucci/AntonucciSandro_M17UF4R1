@@ -13,7 +13,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
     [SerializeField] private int MaxHealth = 100;
 
-    private int currentHealth;
+    public int currentHealth;
 
     private bool canAttack = true;
 
@@ -160,11 +160,8 @@ public class Enemy : MonoBehaviour, IDamageable
 
     public void TakeDamage(int damage)
     {
-        Debug.Log("Enemy took damage: " + damage);
 
         currentHealth -= damage;
-
-        Debug.Log("Enemy health: " + currentHealth);
 
         if (currentHealth <= 0)
         {

@@ -9,7 +9,9 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     [Header("Health")]
     public int maxHealth = 100;
     public int currentHealth;
+    public float invincibilityTime = 1f;
 
+    private bool isInvincible = false;
     public bool isDead = false;
 
     public event Action OnPlayerDied;
@@ -184,7 +186,10 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
     public void TakeDamage(int damage)
     {
-        if (isDead) return;
+
+        if (isDead || isInvincible) return;
+
+        StartCoroutine(Invencibility());
 
         currentHealth -= damage;
 
@@ -205,6 +210,17 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
         GetComponent<PlayerAttack>().enabled = false;
         enabled = false;
+    }
+
+    public IEnumerator Invencibility()
+    {
+
+        isInvincible = true;
+
+        yield return new WaitForSeconds(invincibilityTime);
+
+        isInvincible = false;
+
     }
 
     private void Start()

@@ -53,6 +53,7 @@ public class PlayerAttack : MonoBehaviour
         attackAction.performed += ctx =>
         {
             if (hasKnife) anim.SetBool("isAttacking", true);
+
         };
         attackAction.canceled += ctx =>
         {

@@ -6,6 +6,8 @@ TagManager:
   tags:
   - PatrolPoint
   - Enemy
+  - PlayerAttack
+  - EnemyHitbox
   layers:
   - Default
   - TransparentFX
@@ -16,7 +18,7 @@ TagManager:
   - Enemy
   - Player
   - CrossBow
-  - 
+  - PlayerAttack
   - 
   - 
   - 
